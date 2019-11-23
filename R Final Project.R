@@ -23,12 +23,12 @@ rm(a)
 
 # Reading-in data ---------------------------------------------------------
 
-# Downloading the data base from GBIF
+# Downloading the data base of Common bottlenose dolphins from GBIF
+
 # GBIF (Global Biodiversity Information Facility) is an international network 
 # and research infrastructure funded by the world’s governments and aimed at 
 # providing anyone, anywhere, open access to data about all types of life on Earth.
 
-# DATA BASE OF BOTTLE NOSE COMMON DOLPHINS OCCURRENCES
 
 library(dismo)
 
@@ -44,18 +44,32 @@ write.csv(bottle, "bottle.csv")
 
 class(bottle)
 
-# And I got that bottle is a data.frame
+# It is already a data.frame.
 
 # Example of indexing -----------------------------------------------------
 
 ncol(bottle)
 
 # From the 189 columns in the original data base, eah containing different variables,
-# I will select 8 to create a new data base and apply all the functions that have been requested
+# I will select 8 variables to create a new data base and apply all the functions that 
+# have been requested for this project.
+
+# 8 Variables:
+
+# 1."acceptedScientificName" 
+# 2."basisOfRecord"
+# 3."behavior" 
+# 4."country" 
+# 5."depth"   
+# 6."lat"  
+# 7."lon" 
+# 8."year" 
 
 names(bottle)
 
-scientific.name <- c[,"Tursiops truncatus (Montagu 1821)"]
+scientific.name <- subset(bottle, acceptedScientificName =="Tursiops truncatus (Montagu 1821))
+
+?subset
 
 fields <- # aqui iran las 8 columnas
 
