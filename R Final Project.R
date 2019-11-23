@@ -49,6 +49,7 @@ class(bottle)
 # Example of indexing -----------------------------------------------------
 
 ncol(bottle)
+names(bottle)
 
 # From the 189 columns in the original data base, eah containing different variables,
 # I will select 8 variables to create a new data base and apply all the functions that 
@@ -75,19 +76,17 @@ ncol(bottle)
 # 7."lon": Longitude
 # 8."year": Year of sighting or the year the sample was collected
 
-names(bottle)
+
+# Since we only need data of Tursiops truncatus, we need to subset this from the original db 
 
 scientific.name <- subset(bottle, acceptedScientificName =="Tursiops truncatus (Montagu, 1821)")
 
 head(scientific.name)
 
-levels(bottle$scientificName)
+levels(scientific.name$acceptedScientificName)
 
 
 
-fields <- # aqui iran las 8 columnas
-
-bottle.1 <- # esta sera la nueva base de datos. subseteare usando fields
 
 
 # Subsetting --------------------------------------------------------------
