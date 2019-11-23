@@ -85,7 +85,7 @@ names(bottle)
 # 8."year": Year of sighting or the year the sample was collected
 
 
-# Since we only need data of Tursiops truncatus (Montagu,1821), we need to subset this from 
+# Since we only need he data of Tursiops truncatus (Montagu,1821), we need to subset this from 
 # the original data base
 
 scientific.name <- subset(bottle, acceptedScientificName =="Tursiops truncatus (Montagu, 1821)")
@@ -104,16 +104,15 @@ levels(scientific.name$acceptedScientificName)
 
 # creating a new object with all the vaariables I need to subset from the original data base
 
-variables <- c("scientific.name","basisOfRecord","behavior","country","depth","lat","lon","year")
+variables <- c("acceptedScientificName","basisOfRecord","behavior","country","depth","lat","lon","year")
 
 variables
 
 # creating the new data base as data frame
 
-bottle.1 <- subset(bottle, variables)
+bottle.1 <- scientific.name[,variables]
 
-
-?subset
+head(bottle.1)
 
 # Ordering  ---------------------------------------------------------------
 
