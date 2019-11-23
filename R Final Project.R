@@ -38,7 +38,9 @@ bottle
 
 # Saving the data base in my directory
 
-write.csv(bottle, "bottle.csv")
+bottle <- read.csv("bottle.csv", header = T)
+
+head(bottle)
 
 # Application of the appropriate data storage structure:list, data frame, matrix or array --------
 
@@ -46,7 +48,7 @@ class(bottle)
 
 # It is already a data.frame.
 
-# Example of indexing -----------------------------------------------------
+# Example of indexing and subsetting -----------------------------------------------------
 
 ncol(bottle)
 names(bottle)
@@ -58,6 +60,7 @@ names(bottle)
 # 8 Variables:
 
 # 1."acceptedScientificName": there are 6 options, but I only need Tursiops truncatus (Montagu, 1821)
+
 # 2."basisOfRecord": different ways to record this scientific data
               # Fossil_Specimen
               # Human_Observation
@@ -69,28 +72,48 @@ names(bottle)
               # Unknown : those individuals with this type of record will not be considered
 
 # 3."behavior": e.g. Bowriding, breaching, feeding, migrating, playing ...
+
 # 4."country": Country where the sighting occurred
+
 # 5."depth": It is the depth where the dolphin was spotted only by human observation.
           # For that case, depth = 0 or NA were not considered
+
 # 6."lat": Latitude 
+
 # 7."lon": Longitude
+
 # 8."year": Year of sighting or the year the sample was collected
 
 
-# Since we only need data of Tursiops truncatus, we need to subset this from the original db 
+# Since we only need data of Tursiops truncatus (Montagu,1821), we need to subset this from 
+# the original data base
 
 scientific.name <- subset(bottle, acceptedScientificName =="Tursiops truncatus (Montagu, 1821)")
 
 head(scientific.name)
 
+# Now that there are no values in the columns of the rest of scientific names, we still need to 
+# delete the names of the variables. Using "levels", we will know how many different factors 
+# we have in that column "scientific names"
+
 levels(scientific.name$acceptedScientificName)
 
+scientific.name$acceptedScientificName <- droplevels(scientific.name$acceptedScientificName)
+
+levels(scientific.name$acceptedScientificName)
+
+# creating a new object with all the vaariables I need to subset from the original data base
+
+variables <- c("scientific.name","basisOfRecord","behavior","country","depth","lat","lon","year")
+
+variables
+
+# creating the new data base as data frame
+
+bottle.1 <- subset(bottle, variables)
 
 
-
-
-# Subsetting --------------------------------------------------------------
-
+?subset
 
 # Ordering  ---------------------------------------------------------------
 
