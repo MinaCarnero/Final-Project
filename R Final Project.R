@@ -108,7 +108,7 @@ variables <- c("acceptedScientificName","basisOfRecord","behavior","country","de
 
 variables
 
-# creating the new data base as data frame
+# creating the new data base 
 
 bottle.1 <- scientific.name[,variables]
 
@@ -116,6 +116,16 @@ head(bottle.1)
 
 # Ordering  ---------------------------------------------------------------
 
+bottle.1[complete.cases(bottle.1), ]
+
+library(dplyr)
+
+bottle.1 %>% select(everything()) %>% summarise_all(funs(sum(is.na(.))))
+       
+#  acceptedScientificName basisOfRecord behavior country depth  lat  lon year
+#1                      0             0    38713     148 38638 3940 3940 1651  
+
+# According with this info, behavior and depth have the highest numbers of NAs.Followed by lat and lon
 
 # Summarizing -------------------------------------------------------------
 
