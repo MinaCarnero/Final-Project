@@ -53,8 +53,13 @@ ncol(bottle)
 # From the 189 columns in the original data base, eah containing different variables,
 # I will select 8 to create a new data base and apply all the functions that have been requested
 
+names(bottle)
 
+scientific.name <- c[,"Tursiops truncatus (Montagu 1821)"]
 
+fields <- # aqui iran las 8 columnas
+
+bottle.1 <- # esta sera la nueva base de datos. subseteare usando fields
 
 
 # Subsetting --------------------------------------------------------------
