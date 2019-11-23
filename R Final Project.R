@@ -65,9 +65,9 @@ ncol(bottle)
               # Material_Sample
               # Observation
               # Preserved_Specimen
-              # Unknown
+              # Unknown : those individuals with this type of record will not be considered
 
-# 3."behavior": 
+# 3."behavior": e.g. Bowriding, breaching, feeding, migrating, playing ...
 # 4."country": Country where the sighting occurred
 # 5."depth": It is the depth where the dolphin was spotted only by human observation.
           # For that case, depth = 0 or NA were not considered
@@ -78,6 +78,8 @@ ncol(bottle)
 names(bottle)
 
 scientific.name <- subset(bottle, acceptedScientificName =="Tursiops truncatus (Montagu, 1821)")
+
+head(scientific.name)
 
 levels(bottle$scientificName)
 
