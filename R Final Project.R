@@ -32,7 +32,7 @@ rm(a)
 
 library(dismo)
 
-bottle <- gbif("tursiops","truncatus*", geo = T, download = T)
+# bottle <- gbif("tursiops","truncatus*", geo = T, download = T)
 
 bottle
 
@@ -56,20 +56,32 @@ ncol(bottle)
 
 # 8 Variables:
 
-# 1."acceptedScientificName" 
-# 2."basisOfRecord"
-# 3."behavior" 
-# 4."country" 
-# 5."depth"   
-# 6."lat"  
-# 7."lon" 
-# 8."year" 
+# 1."acceptedScientificName": there are 6 options, but I only need Tursiops truncatus (Montagu, 1821)
+# 2."basisOfRecord": different ways to record this scientific data
+              # Fossil_Specimen
+              # Human_Observation
+              # Living_Observation
+              # Machine_Observation
+              # Material_Sample
+              # Observation
+              # Preserved_Specimen
+              # Unknown
+
+# 3."behavior": 
+# 4."country": Country where the sighting occurred
+# 5."depth": It is the depth where the dolphin was spotted only by human observation.
+          # For that case, depth = 0 or NA were not considered
+# 6."lat": Latitude 
+# 7."lon": Longitude
+# 8."year": Year of sighting or the year the sample was collected
 
 names(bottle)
 
-scientific.name <- subset(bottle, acceptedScientificName =="Tursiops truncatus (Montagu 1821))
+scientific.name <- subset(bottle, acceptedScientificName =="Tursiops truncatus (Montagu, 1821)")
 
-?subset
+levels(bottle$scientificName)
+
+
 
 fields <- # aqui iran las 8 columnas
 
