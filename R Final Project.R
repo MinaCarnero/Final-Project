@@ -23,175 +23,146 @@ rm(a)
 
 # Reading-in data ---------------------------------------------------------
 
-# Downloading the data base of Common bottlenose dolphins from GBIF
+# Reading the database for my thesis, where I want to generate a summary for the qualitative variables of my
+#bottlenose dolphin DNA sequences
 
-# GBIF (Global Biodiversity Information Facility) is an international network 
-# and research infrastructure funded by the world’s governments and aimed at 
-# providing anyone, anywhere, open access to data about all types of life on Earth.
+install.packages(c("ggspatial", "sf", "rnaturalearth", "rnaturalearthdata"))
 
+library("rnaturalearth")
+library("rnaturalearthdata")
+library("sf")
+library("ggspatial")
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("reshape2")
+library("rgeos")
 
-library(dismo)
-
-# bottle <- gbif("tursiops","truncatus*", geo = T, download = T)
-
-bottle
-
-# Saving the data base in my directory
-
-bottle <- read.csv("bottle.csv", header = T)
+bottle <- read.csv("Thesis Carnero.csv", header = T, sep = ",")
 
 head(bottle)
 
 # Application of the appropriate data storage structure:list, data frame, matrix or array --------
 
 class(bottle)
-
 # It is already a data.frame.
-
-# Example of indexing and subsetting -----------------------------------------------------
-
-ncol(bottle)
+nrow(bottle)
 names(bottle)
 
-# From the 189 columns in the original data base, eah containing different variables,
-# I will select 8 variables to create a new data base and apply all the functions that 
-# have been requested for this project.
 
-# 8 Variables:
-
-# 1."acceptedScientificName": there are 6 options, but I only need Tursiops truncatus (Montagu, 1821)
-
-# 2."basisOfRecord": different ways to record this scientific data
-              # Fossil_Specimen
-              # Human_Observation
-              # Living_Observation
-              # Machine_Observation
-              # Material_Sample
-              # Observation
-              # Preserved_Specimen
-              # Unknown : those individuals with this type of record will not be considered
-
-# 3."behavior": e.g. Bowriding, breaching, feeding, migrating, playing ...
-
-# 4."country": Country where the sighting occurred
-
-# 5."depth": It is the depth where the dolphin was spotted only by human observation.
-          # For that case, depth = 0 or NA were not considered
-
-# 6."lat": Latitude 
-
-# 7."lon": Longitude
-
-# 8."year": Year of sighting or the year the sample was collected
-
-
-# Since we only need he data of Tursiops truncatus (Montagu,1821), we need to subset this from 
-# the original data base
-
-scientific.name <- subset(bottle, acceptedScientificName =="Tursiops truncatus (Montagu, 1821)")
-
-head(scientific.name)
-
-# Now that there are no values in the columns of the rest of scientific names, we still need to 
-# delete the names of the variables. Using "levels", we will know how many different factors 
-# we have in that column "scientific names"
-
-levels(scientific.name$acceptedScientificName)
-
-scientific.name$acceptedScientificName <- droplevels(scientific.name$acceptedScientificName)
-
-levels(scientific.name$acceptedScientificName)
+# Example of indexing and subsetting -----------------------------------------------------
+variables <- c("Lab_ID","Collection.Date", "Group","Latitude","Longitude","Tissue_Source","DNA.Quality", "Extraction.Date")
+variables
 
 # creating a new object with all the vaariables I need to subset from the original data base
 
-variables <- c("acceptedScientificName","basisOfRecord","behavior","country","depth","lat","lon","year")
-
-variables
-
-# creating the new data base 
-
-bottle.1 <- scientific.name[,variables]
-
+bottle.1 <- bottle[variables]
 head(bottle.1)
 
-# Ordering  ---------------------------------------------------------------
 
-bottle.1[complete.cases(bottle.1), ]
+# Custom operator to find how many days have passed between collection and extraction dates-----------------------
 
-library(dplyr)
+`%days%` <- function(x, y) {
+  paste0('',as.Date(x, format="%m/%d/%Y") - as.Date(y, format="%m/%d/%Y")," days", sep = "")}
 
-bottle.1 %>% select(everything()) %>% summarise_all(funs(sum(is.na(.))))
-       
-#  acceptedScientificName basisOfRecord behavior country depth  lat  lon year
-#1                      0             0    38713     148 38638 3940 3940 1651  
+bottle.1$Extraction.Date%days%bottle.1$Collection.Date
 
-# According with this info, behavior and depth have the highest numbers of NAs.Followed by lat and lon
 
 # Summarizing -------------------------------------------------------------
+#Summarize data to find NAs
 
+bottle.1 %>% select(everything()) %>% summarise_all(funs(sum(is.na(.))))
+# find if any variable has NA
 
-# Merge or Join data frames  ----------------------------------------------
+# According with this, none of the variables present NA ----------------------------------------------
 
+# Reshaping data with 'melt' and/or 'dcast'  ------------------------------
+
+#Convert some variables into factors
+
+bottle_quality = bottle.1 %>%
+  mutate_at(vars(Group,
+                 Tissue_Source,
+                 DNA.Quality), 
+            funs(factor))
+
+bottle_quality[1:2] <- lapply(bottle_quality[1:2], as.character)
+
+# A map of showing the geographic location where the data was collected --------
+
+world = ne_countries(scale = "medium", returnclass = "sf")
+class(world)
+
+ggplot(data = world) +
+  geom_sf() +
+  annotation_scale(location = "bl", width_hint = 0.5) +
+  annotation_north_arrow(location = "bl", which_north = "true", 
+                         pad_x = unit(0.75, "in"), pad_y = unit(0.8, "in"),
+                         style = north_arrow_fancy_orienteering) +
+  coord_sf(xlim = c(-82, -80.5), ylim = c(30.5,31.8)) +
+  geom_point(data=bottle_quality, aes(x=Longitude, y=Latitude), color="red", size=2, alpha=0.5)+
+  labs(y= "Latitude", x = "Longitude")
 
 # Custom function(s)  -----------------------------------------------------
+#I implemented the previous graph into a function
+
+Mapbottle = function(x) { 
+  botplot=ggplot(data = world) +
+    geom_sf() +
+    geom_point(data=x, aes_string(x=x$Longitude, y=x$Latitude), color="red", size=2, alpha=0.5)+
+    annotation_scale(location = "bl", width_hint = 0.5) +
+    annotation_north_arrow(location = "bl", which_north = "true", 
+                           pad_x = unit(0.75, "in"), pad_y = unit(0.8, "in"),
+                           style = north_arrow_fancy_orienteering) +
+    coord_sf(xlim = c(min(x$Longitude)-0.3, max(x$Longitude)+0.3), ylim = c(min(x$Latitude)-0.3, max(x$Latitude)+0.3))+
+    labs(y= "Latitude", x = "Longitude")
+    print(botplot)
+}
+
+Mapbottle(bottle.1)
+
+# 'for loop'  -------------------------------------------------------------
+#Use a loop to graph each level of Group variable. I will save and export each graph into my directory
+
+places = unique(bottle.1$Group)
+
+dir.create("bottle")
+
+for(i in seq_along(levels(bottle.1$Group))){
+    data=subset(bottle.1, Group==places[i])
+    Mapbottle(data)
+    ggsave(filename = paste0('bottle/',places[i],'.png',sep = ""),
+    units = 'in',
+         dpi = 300)
+   print(bottlefig[i])
+   dev.off()
+}
 
 
-# Custom operator(s)  -----------------------------------------------------
+#Summarize data according two factors
 
+dcast( bottle_quality, DNA.Quality ~ Group , length)
+dcast( bottle_quality, DNA.Quality ~ Tissue_Source , length)
 
-#  ‘if else’ statement ----------------------------------------------------
+# 'ddply' -----------------------------------------------------------------
 
-
-# Reshaping data with ‘melt’ and/or ‘dcast’  ------------------------------
-
-
-# ‘for loop’  -------------------------------------------------------------
-
-
-# ‘ddply’ -----------------------------------------------------------------
 
 
 # Histogram plot  ---------------------------------------------------------
-
-
 # Point, bar, or line plot (whichever makes the most sense)  --------------
+# 'ggplot' with at least 2 geoms (e.g. point, bar, tile) --------
+# use one of the 'scale_' geoms, and adjusting the theme of the plot
 
-
-# ‘ggplot’ with at least 2 geoms (e.g. point, bar, tile) --------
-
-# use one of the ‘scale_’ geoms, and adjusting the theme of the plot
-
-
-# A map of showing the geographic location where the data was coll --------
-
+bottle_quality %>% 
+  select_if(is.factor) %>% 
+  gather %>% 
+  ggplot(aes(x = value)) + geom_bar() +
+  facet_wrap(~key, scales = 'free') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+ggsave(filename = 'bottle/hbottle.png')
 
 
 # Exporting data set  -----------------------------------------------------
-
-
-# Exporting and saving figures from ggplot  -------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+write.csv(bottle_quality, "newbottle.csv")
 
