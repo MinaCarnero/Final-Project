@@ -51,7 +51,8 @@ names(bottle)
 
 
 # Example of indexing and subsetting -----------------------------------------------------
-variables <- c("Lab_ID","Collection.Date", "Group","Latitude","Longitude","Tissue_Source","DNA.Quality", "Extraction.Date")
+variables <- c("Lab_ID","Collection.Date", "Group","Latitude","Longitude","Tissue_Source",
+               "DNA.Quality", "Extraction.Date")
 variables
 
 # creating a new object with all the vaariables I need to subset from the original data base
