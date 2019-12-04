@@ -23,8 +23,8 @@ rm(a)
 
 # Reading-in data ---------------------------------------------------------
 
-# Reading the database for my thesis, where I want to generate a summary for the qualitative variables of my
-#bottlenose dolphin DNA sequences
+# Reading the database for my thesis, where I want to generate a summary for the qualitative 
+# variables of my common bottlenose dolphins DNA samples
 
 install.packages(c("ggspatial", "sf", "rnaturalearth", "rnaturalearthdata"))
 
@@ -37,6 +37,8 @@ library("tidyr")
 library("ggplot2")
 library("reshape2")
 library("rgeos")
+
+dir.create("bottle")
 
 bottle <- read.csv("Thesis Carnero.csv", header = T, sep = ",")
 
@@ -55,7 +57,7 @@ variables <- c("Lab_ID","Collection.Date", "Group","Latitude","Longitude","Tissu
                "DNA.Quality", "Extraction.Date")
 variables
 
-# creating a new object with all the vaariables I need to subset from the original data base
+# creating a new object with all the variables I need to subset from the original data base
 
 bottle.1 <- bottle[variables]
 head(bottle.1)
@@ -68,14 +70,17 @@ head(bottle.1)
 
 bottle.1$Extraction.Date%days%bottle.1$Collection.Date
 
+"09/15/2004"%days%"8/02/2004"
 
 # Summarizing -------------------------------------------------------------
+
 #Summarize data to find NAs
 
 bottle.1 %>% select(everything()) %>% summarise_all(funs(sum(is.na(.))))
+
 # find if any variable has NA
 
-# According with this, none of the variables present NA ----------------------------------------------
+# According with this, none of the variables present NA 
 
 # Reshaping data with 'melt' and/or 'dcast'  ------------------------------
 
@@ -115,7 +120,8 @@ Mapbottle = function(x) {
     annotation_north_arrow(location = "bl", which_north = "true", 
                            pad_x = unit(0.75, "in"), pad_y = unit(0.8, "in"),
                            style = north_arrow_fancy_orienteering) +
-    coord_sf(xlim = c(min(x$Longitude)-0.3, max(x$Longitude)+0.3), ylim = c(min(x$Latitude)-0.3, max(x$Latitude)+0.3))+
+    coord_sf(xlim = c(min(x$Longitude)-0.3, max(x$Longitude)+0.3), ylim = c(min(x$Latitude)-0.3, 
+                                                                            ax(x$Latitude)+0.3))+
     labs(y= "Latitude", x = "Longitude")
     print(botplot)
 }
@@ -135,7 +141,6 @@ for(i in seq_along(levels(bottle.1$Group))){
     ggsave(filename = paste0('bottle/',places[i],'.png',sep = ""),
     units = 'in',
          dpi = 300)
-   print(bottlefig[i])
    dev.off()
 }
 
@@ -143,9 +148,9 @@ for(i in seq_along(levels(bottle.1$Group))){
 #Summarize data according two factors
 
 dcast( bottle_quality, DNA.Quality ~ Group , length)
-dcast( bottle_quality, DNA.Quality ~ Tissue_Source , length)
 
-# 'ddply' -----------------------------------------------------------------
+
+dcast( bottle_quality, DNA.Quality ~ Tissue_Source , length)
 
 
 
